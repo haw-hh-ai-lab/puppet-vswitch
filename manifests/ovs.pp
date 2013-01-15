@@ -3,13 +3,23 @@ class vswitch::ovs(
 ) {
   case $::osfamily {
     Debian: {
-      if ! defined(Package["linux-image-extra-$::kernelversion"]) {
-        package { "linux-image-extra-$::kernelversion": ensure => present }
+      case $::operatingsystem {
+        'Ubuntu': {
+             $ovs_module_req_pkg = "linux-image-extra-$::kernelversion"
+           }
+        default: {
+             # OVS doesn't build unless the kernel headers are present.
+             $ovs_module_req_pkg = "linux-headers-$::kernelrelease"
+          }
       }
+      if ! defined(Package[$ovs_module_req_pkg]) {
+        package{ $ovs_module_req_pkg: ensure => present }
+      }
+    
       package {["openvswitch-common",
                 "openvswitch-switch"]:
         ensure  => $package_ensure,
-        require => Package["linux-image-extra-$::kernelversion"],
+        require => Package[$ovs_module_req_pkg],
         before  => Service['openvswitch-switch'],
       }
     }
