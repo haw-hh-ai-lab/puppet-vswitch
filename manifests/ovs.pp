@@ -36,13 +36,10 @@ class vswitch::ovs(
   service {"openvswitch-switch":
     ensure      => true,
     enable      => true,
-    hasstatus   => $::operatingsystem ? {
-          'Ubuntu' => true,
-          default  => false, # the supplied command returns true even if it's not running
-    }
+    hasstatus   => false
     # Not perfect - should spot if either service is not running - but it'll do
     # will only apply if $hasstatus is false
-    status      => "/etc/init.d/openvswitch-switch status | fgrep 'is running'",
+    status      => "/usr/sbin/service openvswitch-switch status",
   }
 
   Service['openvswitch-switch'] -> Vs_port<||>
