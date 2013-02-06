@@ -36,7 +36,7 @@ class vswitch::ovs(
   service {"openvswitch-switch":
     ensure      => true,
     enable      => true,
-    hasstatus   => false
+    hasstatus   => false,
     # Not perfect - should spot if either service is not running - but it'll do
     # will only apply if $hasstatus is false
     status      => "/usr/sbin/service openvswitch-switch status",
